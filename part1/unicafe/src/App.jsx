@@ -16,6 +16,7 @@ const Statistics = ({good, neutral, bad}) => {
   const average = (good * 1.0 - bad) / total 
   const positive = good * 1.0 / total * 100
 
+
   if (total === 0) {
     return (
       <p>no feedback given</p>
@@ -30,7 +31,7 @@ const Statistics = ({good, neutral, bad}) => {
         <StatisticLine text="bad" value={bad} />
         <StatisticLine text="all" value={total} />
         <StatisticLine text="average" value={average} />
-        <StatisticLine text="positive" value={positive + " %"} />
+        <StatisticLine text="positive" value={`${positive} %`} />
       </tbody>
     </table>
   )
