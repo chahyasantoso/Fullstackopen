@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 
 import Filter from './Filter'
 import PersonForm from './PersonForm'
 import Persons from './Persons'
+import Notification from './Notification'
 import personService from './services/persons.js'
 
 const App = () => {
@@ -11,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setnewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
   const URL = 'http://localhost:3001/persons'
 
   useEffect(() => {
@@ -23,7 +24,14 @@ const App = () => {
 
   const filteredPersons = filter.trim() === '' 
     ? persons
-    : persons.filter(({name}) => name.toLowerCase().includes(filter.toLowerCase()))
+    : persons.filter(({name}) => name.toLowerCase().includes(filter.trim().toLowerCase()))
+
+  const showNotification = (text, type = 'success', time = 5000) => {
+    setNotification({text, type})
+    setTimeout(() => {
+      setNotification(null)
+    }, time)
+  }
 
   const handleNameChange = (e) =>setNewName(e.target.value)
   const handleNumberChange = (e) => setnewNumber(e.target.value)
@@ -46,15 +54,26 @@ const App = () => {
           setPersons([...persons, addedPerson])
           setNewName('')
           setnewNumber('')
+          showNotification(`Added ${addedPerson.name}`)
         })
       return
     }
-    const replaceOK = confirm(`${newName} is already added to phonebook, replace the old number with the new one?`)
+
+    const existingPerson = persons[index]
+    const replaceOK = confirm(`${existingPerson.name} is already added to phonebook, replace the old number with the new one?`)
     if (replaceOK) {
+      existingPerson.number = newNumber
       personService
-        .updateById(newPerson.id, newPerson)
+        .updateById(existingPerson.id, existingPerson)
         .then(updatedPerson => {
           setPersons(persons.map((person) => person.id === updatedPerson.id ? updatedPerson : person))
+          setNewName('')
+          setnewNumber('')
+          showNotification(`Replaced old number of ${updatedPerson.name}`)
+        })
+        .catch(error => {
+          showNotification(`Information of ${newPerson.name} has already been removed from server`, 'error')
+          setPersons(persons.filter((person) => person.id !== newPerson.id))
           setNewName('')
           setnewNumber('')
         })
@@ -69,6 +88,11 @@ const App = () => {
         personService.deleteById(personToDelete.id)
           .then(deletedPerson => {
             setPersons(persons.filter((person) => person.id !== deletedPerson.id))
+            showNotification(`Deleted ${personToDelete.name}`)
+          })
+          .catch(error => {
+            showNotification(`Information of ${personToDelete.name} has already been removed from server`, 'error')
+            setPersons(persons.filter((person) => person.id !== personToDelete.id))
           })
       }
     }
@@ -77,6 +101,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter name={filter} onFilter={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm 
