@@ -1,13 +1,13 @@
 const Countries = ({countries, onShow}) => {
   return (
-      countries.map((country) => <Country key={country.name.common} country={country} onShow={onShow(country.name.common)} />)
+      countries.map((country) => <CountryLine key={country.name.common} country={country} onShow={onShow} />)
   )
 }
 
-const Country = ({country, onShow}) => {
+const CountryLine = ({country, onShow}) => {
   return (
     <div>
-      {country.name.common} <button onClick={onShow}>show</button>
+      {country.name.common} <button onClick={() => onShow(country.name.common)}>show</button>
     </div>
   )
 }

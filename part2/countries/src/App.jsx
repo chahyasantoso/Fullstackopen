@@ -12,12 +12,23 @@ const Filter = ({filter, onChange}) => {
   )
 }
 
+const Result = ({result, onShow}) => {
+  if (result.length > 10) {
+    return <div>Too many matches, specify another filter</div>
+  }
+  if (result.length === 1) {
+    return <CountryInfo countryName={result[0].name.common} />
+  }
+
+  return <Countries countries={result} onShow={onShow} />
+}
+
+
 const App = () => {
   const [countries, setCountries] = useState(null)
-  const [shownCountry, setShownCountry] = useState(null)
   const [filter, setFilter] = useState('')
 
-  const filteredCountries = filter.trim() === ''
+  const filteredCountries = filter === '' 
     ? []
     : countries.filter((country) => country.name.common.toLowerCase().includes(filter.trim().toLowerCase()))
  
@@ -28,21 +39,6 @@ const App = () => {
         setCountries(initialCountries)
       })
   }, [])
-
-  //shownCountry depends on filter change and if filteredCountries = 1
-  useEffect(() => {
-    if (filteredCountries === null || filteredCountries.length !== 1) {
-      setShownCountry(null)
-      return
-    }
-    setShownCountry(filteredCountries[0].name.common)
-  }, [filter])
-
-  const handleShow = (countryName) => {
-    return () => {
-      setShownCountry(countryName)
-    }
-  }
 
   const handleFilterChange = (e) => {
     const filterValue = e.target.value
@@ -56,13 +52,7 @@ const App = () => {
   return (
     <>
       <Filter filter={filter} onChange={handleFilterChange} />
-      {filteredCountries.length > 10
-          ? <div>Too many matches, specify another filter</div>
-          : shownCountry === null 
-              ? <Countries countries={filteredCountries} onShow={handleShow} />
-              : <CountryInfo countryName={shownCountry} />
-      }
-     
+      <Result result={filteredCountries} onShow={setFilter} />     
     </>
   )
 }
