@@ -12,13 +12,15 @@ const App = () => {
   const [newNumber, setnewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [notification, setNotification] = useState(null)
-  const URL = 'http://localhost:3001/persons'
 
   useEffect(() => {
     personService
       .getAll()
       .then(personsData => {
         setPersons(personsData)
+      })
+      .catch(error => {
+        console.log(error)
       })
   }, [])
 
@@ -33,68 +35,69 @@ const App = () => {
     }, time)
   }
 
+  const clearFormEntries = () => {
+    setNewName('')
+    setnewNumber('')
+  }
+
   const handleNameChange = (e) =>setNewName(e.target.value)
   const handleNumberChange = (e) => setnewNumber(e.target.value)
   const handleFilterChange = (e) => setFilter(e.target.value)
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (newName.trim() === '') {
-      return
-    }
-    const newPerson = { 
-      name: newName, 
-      number: newNumber, 
-      id: `id-${newName}` 
-    }
-    const index = persons.findIndex(({name}) => name.toLowerCase() === newPerson.name.toLowerCase())
-    if (index == -1) {
-      personService
-        .create(newPerson)
+    
+    const existingPerson = persons.find(({name}) => name.toLowerCase() === newName.toLowerCase())
+    if (!existingPerson) {
+      personService.create({name: newName, number: newNumber})
         .then(addedPerson => {
-          setPersons([...persons, addedPerson])
-          setNewName('')
-          setnewNumber('')
           showNotification(`Added ${addedPerson.name}`)
+          setPersons([...persons, addedPerson])
+          clearFormEntries()
+        })
+        .catch(error => {
+          let message = error.response.data.error || error.message
+          showNotification(`Error: ${message}`, 'error')
+          clearFormEntries()
         })
       return
     }
 
-    const existingPerson = persons[index]
     const replaceOK = confirm(`${existingPerson.name} is already added to phonebook, replace the old number with the new one?`)
     if (replaceOK) {
-      existingPerson.number = newNumber
-      personService
-        .updateById(existingPerson.id, existingPerson)
+      personService.updateById(existingPerson.id, {...existingPerson, number: newNumber})
         .then(updatedPerson => {
-          setPersons(persons.map((person) => person.id === updatedPerson.id ? updatedPerson : person))
-          setNewName('')
-          setnewNumber('')
           showNotification(`Replaced old number of ${updatedPerson.name}`)
+          setPersons(persons.map((person) => person.id === updatedPerson.id ? updatedPerson : person))
+          clearFormEntries()
         })
         .catch(error => {
-          showNotification(`Information of ${newPerson.name} has already been removed from server`, 'error')
-          setPersons(persons.filter((person) => person.id !== newPerson.id))
-          setNewName('')
-          setnewNumber('')
+          switch (error.response.status) {
+            case 404:
+              showNotification(`Information of ${existingPerson.name} has already been removed from server`, 'error')
+              setPersons(persons.filter((person) => person.id !== existingPerson.id))
+              clearFormEntries()
+              break
+            default:
+              let message = error.response.data.error || error.message
+              showNotification(`Error: ${message}`, 'error')
+          }
         })
     }
   }
 
   const handleDelete = (personToDelete) => {
-    return (e) => {
-      //console.log(e.target, personToDelete)
-      const deleteOK = confirm(`Delete ${personToDelete.name}`)
-      if (deleteOK) {
-        personService.deleteById(personToDelete.id)
-          .then(deletedPerson => {
-            setPersons(persons.filter((person) => person.id !== deletedPerson.id))
-            showNotification(`Deleted ${personToDelete.name}`)
-          })
-          .catch(error => {
-            showNotification(`Information of ${personToDelete.name} has already been removed from server`, 'error')
-            setPersons(persons.filter((person) => person.id !== personToDelete.id))
-          })
-      }
+    //console.log(e.target, personToDelete)
+    const deleteOK = confirm(`Delete ${personToDelete.name}`)
+    if (deleteOK) {
+      personService.deleteById(personToDelete.id)
+        .then(deletedPerson => {
+          showNotification(`Deleted ${personToDelete.name}`)
+          setPersons(persons.filter((person) => person.id !== deletedPerson.id))
+        })
+        .catch(error => {
+          showNotification(`Information of ${personToDelete.name} has already been removed from server`, 'error')
+          setPersons(persons.filter((person) => person.id !== personToDelete.id))
+        })
     }
   }
 

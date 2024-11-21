@@ -3,7 +3,7 @@ const Persons = ({persons, onDelete}) => {
     <>
     {
       persons.map(
-        (person) => <Person key={person.id} person={person} onDelete={onDelete(person)}  />
+        (person) => <Person key={person.id} person={person} onDelete={onDelete}  />
       )
     }
     </>
@@ -15,7 +15,7 @@ const Person = ({person, onDelete}) => {
   return (  
     <>
       <div>
-        {name} {number} <button onClick={onDelete}>delete</button>
+        {name} {number} <button onClick={() => onDelete(person)}>delete</button>
       </div>
     </>
   )
