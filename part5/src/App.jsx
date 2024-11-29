@@ -1,17 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-const Notification = ({message}) => {
-  return message 
-  ? (
-    <div>
-      <h2 className={message.type}>{message.text}</h2>
-    </div>
-  )
-  : null
-}
+import Notification from './components/Notification'
+import CreateForm from './components/CreateForm'
+import Toggleable from './components/Toggleable'
 
 const App = () => {
   const STORAGE_USER_KEY = 'user'
@@ -27,9 +21,6 @@ const App = () => {
   })
 
   const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   const [notification, setNotification] = useState(null)
   const showNotification = (text, type = 'success', duration = 5000) => {
@@ -70,27 +61,23 @@ const App = () => {
     setUser(null)
   }
 
-  const handleTitleChange = e => setTitle(e.target.value)
-  const handleAuthorChange = e => setAuthor(e.target.value)
-  const handleUrlChange = e => setUrl(e.target.value)
-  const resetCreateForm = () => {
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-  }
-  const create = async e => {
-    e.preventDefault()
+  const createFormRef = useRef()
+  const create = async (blog) => {
     try {
-      const newBlog = await blogService.create({ title, author, url}, user.token)
+      const newBlog = await blogService.create(blog, user.token)
       setBlogs([...blogs, newBlog])
-      resetCreateForm()
-      showNotification(`a new blog ${title} by ${author}`)
+      showNotification(`a new blog ${newBlog.title} by ${newBlog.author}`)
+      //hide form
+      createFormRef.current.toggle()
+
     } catch (error) {
-      console.log(error.response.data.error)
+      console.log(error)
       showNotification(error.response.data.error, 'error')
     }
   }
 
+  //update like should be here, soalnya nanti blog harus di sort
+ 
 
   if (!user) {
     return (
@@ -120,23 +107,9 @@ const App = () => {
         { user.name } logged in 
         <button onClick={logout}>Logout</button>
       </div>
-      <div>
-        <h2>Create new</h2>
-        <form onSubmit={create}>
-          <div>
-            Title : <input type='text' value={title} onChange={handleTitleChange} />
-          </div>
-          <div>
-            Author : <input type='text' value={author} onChange={handleAuthorChange} />
-          </div>
-          <div>
-            URL : <input type='text' value={url} onChange={handleUrlChange} />
-          </div>
-          <div>
-            <button type='submit'>Create</button>
-          </div>
-        </form>
-      </div>
+      <Toggleable ref={createFormRef} showLabel='New Blog' hideLabel='Cancel'>
+        <CreateForm onSubmit={create} />
+      </Toggleable>
       <h2>Blog list</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
@@ -144,5 +117,6 @@ const App = () => {
     </div>
   )
 }
+
 
 export default App
