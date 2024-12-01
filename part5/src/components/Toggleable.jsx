@@ -5,7 +5,7 @@ const Toggleable = forwardRef(({ children, showLabel, hideLabel }, ref) => {
   const toggle = e => {
     setVisible(!visible)
   }
-  const showButton = showLabel 
+  const showButton = showLabel
     ? (<button onClick={toggle}>{showLabel}</button>)
     : null
 
@@ -19,16 +19,12 @@ const Toggleable = forwardRef(({ children, showLabel, hideLabel }, ref) => {
 
   return (
     <div>
-      {visible
-        ? children
-        : showButton
-      }
-      {visible
-        ? hideButton
-        : null
-      }
+      {visible ? children : showButton}
+      {visible ? hideButton : null}
     </div>
   )
 })
+
+Toggleable.displayName = 'Toggleable'
 
 export default Toggleable

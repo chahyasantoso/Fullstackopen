@@ -1,11 +1,10 @@
-import { useRef, useState } from "react"
-import Toggleable from "./Toggleable"
-import blogService from '../services/blogs'
+import { useRef, useState } from 'react'
+import Toggleable from './Toggleable'
+import PropTypes from 'prop-types'
 
-const Blog = ({ blog }) => {
+const Blog = ({ user, blog, onLike, onDelete }) => {
   const detailRef = useRef()
   const [visible, setVisible] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
 
   const handleToggle = () => {
     setVisible(!visible)
@@ -13,25 +12,35 @@ const Blog = ({ blog }) => {
   }
 
   const handleLike = async () => {
-    try {
-      const updatedLikes = likes + 1
-      await blogService.update({ ...blog, likes: updatedLikes })
-      setLikes(updatedLikes)  
-    } catch (error) {
-      console.log(error)
+    const blogWithUpdatedLike = { ...blog, likes: blog.likes + 1 }
+    onLike(blogWithUpdatedLike)
+  }
+
+  const handleDelete = async () => {
+    const confirmOK = confirm(`Remove ${blog.title} ${blog.author}`)
+    if (confirmOK) {
+      onDelete(blog)
     }
   }
 
   return (
     <div className='item'>
-      {blog.title} {blog.author} 
+      {blog.title} {blog.author}
       <button onClick={handleToggle}>{visible ? 'Hide' : 'View'}</button>
       <Toggleable ref={detailRef}>
         <div>{blog.url}</div>
-        <div>Likes {likes} <button onClick={handleLike}>Like</button></div>
+        <div>Likes {blog.likes} <button onClick={handleLike}>Like</button></div>
         <div>{blog.user.name}</div>
+
+        <div>
+          {user.id === blog.user.id
+            ? <button className='btn-blue' onClick={handleDelete}>Remove</button>
+            : null
+          }
+        </div>
       </Toggleable>
-    </div>  
-)}
+    </div>
+  )
+}
 
 export default Blog

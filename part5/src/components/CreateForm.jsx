@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const CreateForm = ({ onSubmit }) => {
   const [title, setTitle] = useState('')
@@ -14,10 +15,10 @@ const CreateForm = ({ onSubmit }) => {
     setUrl('')
   }
 
-  const create = e => {
+  const create = async e => {
     e.preventDefault()
+    await onSubmit({ title, author, url })
     reset()
-    onSubmit({ title, author, url })
   }
 
   return (
@@ -38,8 +39,11 @@ const CreateForm = ({ onSubmit }) => {
         </div>
       </form>
     </div>
-      
   )
+}
+
+CreateForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 }
 
 export default CreateForm

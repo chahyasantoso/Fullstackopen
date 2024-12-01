@@ -22,3 +22,8 @@
   background-color: lightgrey;
   margin: 5px;
 }
+
+.btn-blue {
+  background-color: blue;
+  color: white;
+}
