@@ -28,8 +28,8 @@ const Blog = ({ user, blog, onLike, onDelete }) => {
       {blog.title} {blog.author}
       <button onClick={handleToggle}>{visible ? 'Hide' : 'View'}</button>
       <Toggleable ref={detailRef}>
-        <div>{blog.url}</div>
-        <div>Likes {blog.likes} <button onClick={handleLike}>Like</button></div>
+        <div className='url'>{blog.url}</div>
+        <div className='likes'>Likes {blog.likes} <button onClick={handleLike}>Like</button></div>
         <div>{blog.user.name}</div>
 
         <div>

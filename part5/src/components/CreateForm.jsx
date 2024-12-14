@@ -26,13 +26,13 @@ const CreateForm = ({ onSubmit }) => {
       <h2>Create new</h2>
       <form onSubmit={create}>
         <div>
-          Title : <input type='text' value={title} onChange={handleTitleChange} />
+          Title : <input data-testid='title' id='title' type='text' value={title} onChange={handleTitleChange} />
         </div>
         <div>
-          Author : <input type='text' value={author} onChange={handleAuthorChange} />
+          Author : <input data-testid='author' id='author' type='text' value={author} onChange={handleAuthorChange} />
         </div>
         <div>
-          URL : <input type='text' value={url} onChange={handleUrlChange} />
+          URL : <input data-testid='url' id='url' type='text' value={url} onChange={handleUrlChange} />
         </div>
         <div>
           <button type='submit'>Create</button>

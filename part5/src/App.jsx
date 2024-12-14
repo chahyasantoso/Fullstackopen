@@ -14,7 +14,7 @@ const App = () => {
     localStorage.getItem(STORAGE_USER_KEY)
   ))
   const [blogs, setBlogs] = useState([])
-  const sortedBlogs = blogs.sort((a, b) => a.likes - b.likes)
+  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
 
   const [notification, setNotification] = useState(null)
   const showNotification = (text, type = 'success', duration = 5000) => {
