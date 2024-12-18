@@ -2,8 +2,11 @@ import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getAll, update } from './services/anecdotes'
+import { useContext } from 'react'
+import NotificationContext, { resetNotification, setNotification } from './contexts/notificationContext'
 
 const App = () => {
+  const [notification, dispatch] = useContext(NotificationContext)
   const result = useQuery({
     queryKey: ['anecdotes'],
     queryFn: getAll,
@@ -26,6 +29,7 @@ const App = () => {
   })
 
 
+
   if (result.isError) {
     return (
       <h2>
@@ -39,6 +43,8 @@ const App = () => {
   const handleVote = (anecdote) => {
     const udpatedAnecdote = { ...anecdote, votes: anecdote.votes + 1 }
     voteMutation.mutate({ id: anecdote.id, anecdote: udpatedAnecdote })
+    dispatch(setNotification(`voted ${udpatedAnecdote.content}`))
+    setTimeout(() => dispatch(resetNotification()), 5000)
   }
 
   return (
