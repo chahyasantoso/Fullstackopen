@@ -1,4 +1,4 @@
-const STORAGE_USER_KEY = 'user'
+const STORAGE_USER_KEY = 'user_session'
 
 const getSession = () => {
   return JSON.parse(localStorage.getItem(STORAGE_USER_KEY))
@@ -9,7 +9,7 @@ const setSession = (userSession) => {
 }
 
 const clearSession = () => {
-  localStorage.clear()
+  localStorage.removeItem(STORAGE_USER_KEY)
 }
 
 export default { getSession, setSession, clearSession }

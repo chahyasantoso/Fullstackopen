@@ -43,7 +43,7 @@ export const initializeBlogs = () => {
 
 export const createBlog = (blog) => {
   return async (dispatch, getState) => {
-    const token = getState().user.token
+    const token = getState().userSession.token
     const newBlog = await blogService.createBlog(blog, token)
     dispatch(addToState(newBlog))
     return newBlog
@@ -64,10 +64,19 @@ export const likeBlog = (blog) => {
 
 export const deleteBlog = (blog) => {
   return async (dispatch, getState) => {
-    const token = getState().user.token
+    const token = getState().userSession.token
     const deletedBlog = await blogService.deleteBlog(blog.id, token)
     dispatch(deleteFromState(deletedBlog))
     return deleteBlog
+  }
+}
+
+export const addComment = (blog, comment) => {
+  return async (dispatch, getState) => {
+    const newComment = await blogService.addComment(blog.id, comment)
+    const updatedBlog = { ...blog, comments: [...blog.comments, newComment] }
+    dispatch(updateToState(updatedBlog))
+    return newComment
   }
 }
 

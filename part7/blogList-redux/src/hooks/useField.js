@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const useForm = (type = 'text') => {
+export const useField = (type = 'text') => {
   const [value, setValue] = useState('')
   const onChange = (e) => {
     setValue(e.target.value)
@@ -16,5 +16,3 @@ const useForm = (type = 'text') => {
     onReset,
   }
 }
-
-export default useForm

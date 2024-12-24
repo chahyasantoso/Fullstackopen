@@ -1,12 +1,12 @@
 import { useDispatch } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
-import { login } from '../reducers/userReducer'
-import useForm from '../hooks/useForm'
+import { login } from '../reducers/userSessionReducer'
+import { useField } from '../hooks/useField'
 
 const LoginForm = () => {
   const dispatch = useDispatch()
-  const username = useForm()
-  const password = useForm('password')
+  const username = useField()
+  const password = useField('password')
 
   const reset = () => {
     username.onReset()
@@ -16,7 +16,7 @@ const LoginForm = () => {
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      const user = await dispatch(login(username.value, password.value))
+      dispatch(login(username.value, password.value))
     } catch (error) {
       dispatch(
         setNotification({ text: 'wrong username or password', type: 'error' })

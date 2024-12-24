@@ -1,10 +1,9 @@
 import { useState, forwardRef, useImperativeHandle } from 'react'
+import { useToggle } from '../hooks/useToggle'
 
 const Toggleable = forwardRef(({ children, showLabel, hideLabel }, ref) => {
-  const [visible, setVisible] = useState(false)
-  const toggle = (e) => {
-    setVisible(!visible)
-  }
+  const [visible, toggle] = useToggle()
+
   const showButton = showLabel ? (
     <button onClick={toggle}>{showLabel}</button>
   ) : null

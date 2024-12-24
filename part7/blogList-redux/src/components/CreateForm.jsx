@@ -1,13 +1,12 @@
-import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../reducers/blogsReducer'
 import { setNotification } from '../reducers/notificationReducer'
-import useForm from '../hooks/useForm'
+import { useField } from '../hooks/useField'
 
-const CreateForm = ({ onToggle }) => {
-  const title = useForm()
-  const author = useForm()
-  const url = useForm()
+const CreateForm = ({ onCreate }) => {
+  const title = useField()
+  const author = useField()
+  const url = useField()
 
   const dispatch = useDispatch()
 
@@ -27,8 +26,8 @@ const CreateForm = ({ onToggle }) => {
           text: `a new blog ${newBlog.title} by ${newBlog.author}`,
         })
       )
-      if (onToggle) {
-        onToggle()
+      if (onCreate) {
+        onCreate()
       }
     } catch (error) {
       console.log(error)

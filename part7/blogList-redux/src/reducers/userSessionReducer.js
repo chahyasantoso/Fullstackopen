@@ -5,13 +5,13 @@ import loginService from '../services/login'
 const initialState = sessionService.getSession()
 
 const slice = createSlice({
-  name: 'user',
+  name: 'userSession',
   initialState,
   reducers: {
     setUserState(state, action) {
-      const user = action.payload
-      sessionService.setSession(user)
-      return user
+      const userSession = action.payload
+      sessionService.setSession(userSession)
+      return userSession
     },
     logout(state, action) {
       sessionService.clearSession()
@@ -26,10 +26,9 @@ export const login = (username, password) => {
   return async (dispatch) => {
     const userFromLogin = await loginService.login(username, password)
     dispatch(setUserState(userFromLogin))
-
     return userFromLogin
   }
 }
 
-const userReducer = slice.reducer
-export default userReducer
+const userSessionReducer = slice.reducer
+export default userSessionReducer
