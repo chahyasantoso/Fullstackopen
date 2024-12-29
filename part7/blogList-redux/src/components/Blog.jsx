@@ -1,68 +1,76 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
-import { setNotification } from '../reducers/notificationReducer'
 import CommentList from './CommentList'
+import Card from 'react-bootstrap/Card'
+import ListGroup from 'react-bootstrap/ListGroup'
+import Button from 'react-bootstrap/Button'
 
 const Blog = ({ blog }) => {
-  const user = useSelector((state) => state.userSession)
+  const userSession = useSelector((state) => state.userSession)
   const dispatch = useDispatch()
 
   const handleLike = async (blog) => {
     try {
-      dispatch(likeBlog(blog))
-    } catch (error) {
-      dispatch(
-        setNotification({
-          text: error.response?.data?.error,
-          type: 'error',
-        })
-      )
-    }
+      await dispatch(likeBlog(blog))
+    } catch {}
   }
 
   const handleDelete = async (blog) => {
-    try {
-      const confirmOK = confirm(`Remove ${blog.title} ${blog.author}`)
-      if (confirmOK) {
-        dispatch(deleteBlog(blog))
-      }
-    } catch (error) {
-      dispatch(
-        setNotification({
-          text: error.response?.data?.error,
-          type: 'error',
-        })
-      )
+    const confirmOK = confirm(`Remove ${blog.title} ${blog.author}`)
+    if (confirmOK) {
+      try {
+        await dispatch(deleteBlog(blog))
+      } catch {}
     }
   }
 
   if (!blog) {
-    return <h2>blog doesn't exist</h2>
+    return null
   }
 
   const btnRemove =
-    user.id === blog.user.id ? (
-      <button className="btn-blue" onClick={() => handleDelete(blog)}>
-        Remove
-      </button>
+    userSession.id === blog.user.id ? (
+      <Button
+        className="mx-2"
+        type="button"
+        size="sm"
+        onClick={() => handleDelete(blog)}
+      >
+        Remove Blog
+      </Button>
     ) : null
 
   return (
-    <div className="item">
-      <h2>
-        {blog.title} {blog.author}
-      </h2>
-      <a href={blog.url} className="url">
-        {blog.url}
-      </a>
-      <div className="likes">
-        {blog.likes} likes
-        <button onClick={() => handleLike(blog)}>Like</button>
-      </div>
-      <div>added by {blog.user.name}</div>
-      {/* <div>{btnRemove}</div> */}
-      <CommentList blog={blog} />
-    </div>
+    <Card className="mb-3">
+      <Card.Header as="h3">
+        {blog.title} by {blog.author}
+      </Card.Header>
+      <ListGroup variant="flush">
+        <ListGroup.Item>
+          <a href={blog.url} className="url">
+            {blog.url}
+          </a>
+        </ListGroup.Item>
+        <ListGroup.Item>
+          {blog.likes} likes
+          <Button
+            className="mx-1"
+            type="button"
+            size="sm"
+            onClick={() => handleLike(blog)}
+          >
+            Like
+          </Button>
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <span>added by {blog.user.name}</span>
+          {btnRemove}
+        </ListGroup.Item>
+        <ListGroup.Item className="text-bg-light">
+          <CommentList blog={blog} />
+        </ListGroup.Item>
+      </ListGroup>
+    </Card>
   )
 }
 

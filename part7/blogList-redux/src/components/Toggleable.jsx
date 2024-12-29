@@ -1,28 +1,32 @@
 import { useState, forwardRef, useImperativeHandle } from 'react'
 import { useToggle } from '../hooks/useToggle'
+import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button'
 
-const Toggleable = forwardRef(({ children, showLabel, hideLabel }, ref) => {
-  const [visible, toggle] = useToggle()
+const Toggleable = forwardRef(
+  ({ children, className, showLabel, hideLabel }, ref) => {
+    const [visible, toggle] = useToggle()
 
-  const showButton = showLabel ? (
-    <button onClick={toggle}>{showLabel}</button>
-  ) : null
+    const showButton = showLabel ? (
+      <Button onClick={toggle}>{showLabel}</Button>
+    ) : null
 
-  const hideButton = hideLabel ? (
-    <button onClick={toggle}>{hideLabel}</button>
-  ) : null
+    const hideButton = hideLabel ? (
+      <Button onClick={toggle}>{hideLabel}</Button>
+    ) : null
 
-  useImperativeHandle(ref, () => ({
-    toggle,
-  }))
+    useImperativeHandle(ref, () => ({
+      toggle,
+    }))
 
-  return (
-    <div>
-      {visible ? children : showButton}
-      {visible ? hideButton : null}
-    </div>
-  )
-})
+    return (
+      <div className={className}>
+        {visible ? children : showButton}
+        {visible ? hideButton : null}
+      </div>
+    )
+  }
+)
 
 Toggleable.displayName = 'Toggleable'
 

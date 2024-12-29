@@ -1,7 +1,9 @@
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../reducers/blogsReducer'
-import { setNotification } from '../reducers/notificationReducer'
 import { useField } from '../hooks/useField'
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card'
 
 const CreateForm = ({ onCreate }) => {
   const title = useField()
@@ -20,47 +22,37 @@ const CreateForm = ({ onCreate }) => {
     e.preventDefault()
     const blog = { title: title.value, author: author.value, url: url.value }
     try {
-      const newBlog = await dispatch(createBlog(blog))
-      dispatch(
-        setNotification({
-          text: `a new blog ${newBlog.title} by ${newBlog.author}`,
-        })
-      )
+      await dispatch(createBlog(blog))
       if (onCreate) {
         onCreate()
       }
-    } catch (error) {
-      console.log(error)
-      dispatch(
-        setNotification({
-          text: error.response?.data?.error,
-          type: 'error',
-        })
-      )
-    } finally {
       reset()
-    }
+    } catch {}
   }
 
   return (
-    <div>
-      <h2>Create new</h2>
-      <form onSubmit={handleCreate}>
-        <div>
-          Title :
-          <input data-testid="title" id="title" {...title} />
-        </div>
-        <div>
-          Author : <input data-testid="author" id="author" {...author} />
-        </div>
-        <div>
-          URL : <input data-testid="url" id="url" {...url} />
-        </div>
-        <div>
-          <button type="submit">Create</button>
-        </div>
-      </form>
-    </div>
+    <Card className="mb-3">
+      <Card.Header>Create New</Card.Header>
+      <Card.Body>
+        <Form onSubmit={handleCreate}>
+          <Form.Group>
+            <Form.Label>Title</Form.Label>
+            <Form.Control name="title" {...title} />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Author</Form.Label>
+            <Form.Control name="author" {...author} />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Url</Form.Label>
+            <Form.Control name="url" {...url} />
+          </Form.Group>
+          <Button className="mt-3 w-100" variant="primary" type="submit">
+            Create
+          </Button>
+        </Form>
+      </Card.Body>
+    </Card>
   )
 }
 

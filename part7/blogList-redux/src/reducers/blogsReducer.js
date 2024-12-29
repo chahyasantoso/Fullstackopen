@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, current } from '@reduxjs/toolkit'
 import blogService from '../services/blogs'
+import { setNotification } from './notificationReducer'
 
 const slice = createSlice({
   name: 'blogs',
@@ -15,18 +16,13 @@ const slice = createSlice({
     },
     updateToState(state, action) {
       const updatedBlog = action.payload
-      return state.map((s) => {
-        if (s.id === updatedBlog.id) {
-          return updatedBlog
-        }
-        return s
-      })
+      return state.map((blog) =>
+        blog.id === updatedBlog.id ? updatedBlog : blog
+      )
     },
     deleteFromState(state, action) {
       const blogToDelete = action.payload
-      return state.filter((s) => {
-        return s.id !== blogToDelete.id
-      })
+      return state.filter((blog) => blog.id !== blogToDelete.id)
     },
   },
 })
@@ -46,19 +42,26 @@ export const createBlog = (blog) => {
     const token = getState().userSession.token
     const newBlog = await blogService.createBlog(blog, token)
     dispatch(addToState(newBlog))
-    return newBlog
+    dispatch(
+      setNotification({
+        text: `a new blog ${newBlog.title} by ${newBlog.author}`,
+      })
+    )
   }
 }
 
 export const likeBlog = (blog) => {
   return async (dispatch, getState) => {
-    const blogWithIncrementLike = { ...blog, likes: blog.likes + 1 }
+    const blogWithIncrementLike = {
+      ...blog,
+      likes: blog.likes + 1,
+      comments: [...blog.comments.map((comment) => comment.id)], //de-populate the comments
+    }
     const updatedBlog = await blogService.updateBlog(
       blog.id,
       blogWithIncrementLike
     )
     dispatch(updateToState(updatedBlog))
-    return updatedBlog
   }
 }
 
@@ -67,7 +70,7 @@ export const deleteBlog = (blog) => {
     const token = getState().userSession.token
     const deletedBlog = await blogService.deleteBlog(blog.id, token)
     dispatch(deleteFromState(deletedBlog))
-    return deleteBlog
+    dispatch(setNotification({ text: `blog deleted` }))
   }
 }
 
@@ -75,8 +78,8 @@ export const addComment = (blog, comment) => {
   return async (dispatch, getState) => {
     const newComment = await blogService.addComment(blog.id, comment)
     const updatedBlog = { ...blog, comments: [...blog.comments, newComment] }
+    console.log('add comment', updatedBlog)
     dispatch(updateToState(updatedBlog))
-    return newComment
   }
 }
 

@@ -2,22 +2,33 @@ import { useEffect, useRef } from 'react'
 import CreateForm from './CreateForm'
 import Toggleable from './Toggleable'
 import { Link } from 'react-router-dom'
+import Card from 'react-bootstrap/Card'
+import ListGroup from 'react-bootstrap/ListGroup'
 
 const BlogList = ({ blogs }) => {
   const createRef = useRef()
 
   return (
     <div>
-      <Toggleable ref={createRef} showLabel="New Blog" hideLabel="Cancel">
+      <Toggleable
+        className="mb-3 "
+        ref={createRef}
+        showLabel="New Blog"
+        hideLabel="Cancel"
+      >
         <CreateForm onCreate={() => createRef.current.toggle()} />
       </Toggleable>
-      {blogs.map((blog) => (
-        <div key={blog.id} className="item">
-          <Link to={`/blogs/${blog.id}`}>
-            {blog.title} {blog.user.name}
-          </Link>
-        </div>
-      ))}
+      <Card>
+        <ListGroup variant="flush">
+          {blogs.map((blog) => (
+            <ListGroup.Item key={blog.id}>
+              <Link to={`/blogs/${blog.id}`}>
+                {blog.title} {blog.user.name}
+              </Link>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Card>
     </div>
   )
 }
