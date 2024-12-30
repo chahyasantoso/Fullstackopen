@@ -4,8 +4,18 @@ import CommentList from './CommentList'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Button from 'react-bootstrap/Button'
+import { useParams } from 'react-router-dom'
+import { createSelector } from '@reduxjs/toolkit'
 
-const Blog = ({ blog }) => {
+const blogSelector = createSelector(
+  (state) => state.blogs,
+  (state, id) => id,
+  (blogs, id) => blogs.find((blog) => blog.id === id)
+)
+
+const Blog = () => {
+  const params = useParams()
+  const blog = useSelector((state) => blogSelector(state, params.id))
   const userSession = useSelector((state) => state.userSession)
   const dispatch = useDispatch()
 

@@ -23,9 +23,7 @@ const CreateForm = ({ onCreate }) => {
     const blog = { title: title.value, author: author.value, url: url.value }
     try {
       await dispatch(createBlog(blog))
-      if (onCreate) {
-        onCreate()
-      }
+      onCreate?.()
       reset()
     } catch {}
   }

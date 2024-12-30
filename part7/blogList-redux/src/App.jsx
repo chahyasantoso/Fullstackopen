@@ -7,20 +7,22 @@ import Login from './components/Login'
 import Menu from './components/Menu'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { Routes, Route, useMatch } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
 import { initializeUsers } from './reducers/usersReducer'
 import { initializeBlogs } from './reducers/blogsReducer'
+import { createSelector } from '@reduxjs/toolkit'
+
+const blogsSelector = createSelector(
+  (state) => state.blogs, //input; akan memonitor state ini, jika berubah
+  (blogs) => [...blogs].sort((a, b) => b.likes - a.likes) //output; maka output akan dijalankan
+)
 
 const App = () => {
   const userSession = useSelector((state) => state.userSession)
+  const blogs = useSelector(blogsSelector)
   const users = useSelector((state) => state.users)
   const dispatch = useDispatch()
-
-  const blogs = useSelector((state) => {
-    const sortedBlogs = [...state.blogs].sort((a, b) => b.likes - a.likes)
-    return sortedBlogs
-  })
 
   useEffect(() => {
     if (userSession) {
@@ -28,21 +30,6 @@ const App = () => {
       dispatch(initializeUsers())
     }
   }, [userSession])
-
-  const userIdMatch = useMatch('/users/:id')
-  const userById = (id) => users.find((user) => user.id === id)
-  const user = userIdMatch ? userById(userIdMatch.params.id) : null
-
-  const blogIdMatch = useMatch('/blogs/:id')
-  const blogsById = (id) => blogs.find((blog) => blog.id === id)
-  const blog = blogIdMatch ? blogsById(blogIdMatch.params.id) : null
-
-  const routes = [
-    { path: '/', element: <BlogList blogs={blogs} /> },
-    { path: '/blogs/:id', element: <Blog blog={blog} /> },
-    { path: '/users', element: <UserList users={users} /> },
-    { path: '/users/:id', element: <User user={user} /> },
-  ]
 
   if (!userSession) {
     return <Login />
@@ -55,9 +42,10 @@ const App = () => {
         <h2 className="mt-3 mb-3">BlogApp</h2>
         <Notification />
         <Routes>
-          {routes.map((route) => (
-            <Route key={route.path} {...route} />
-          ))}
+          <Route path="/" element={<BlogList blogs={blogs} />} />
+          <Route path="/blogs/:id" element={<Blog />} />
+          <Route path="/users" element={<UserList users={users} />} />
+          <Route path="/users/:id" element={<User />} />
         </Routes>
       </div>
     </div>
