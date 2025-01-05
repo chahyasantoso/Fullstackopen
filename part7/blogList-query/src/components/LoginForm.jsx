@@ -2,13 +2,12 @@ import { useField } from '../hooks/useField'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
-import UserSessionContext from '../contexts/UserSessionContext'
-import { useContext } from 'react'
-import NotificationContext from '../contexts/NotificationContext'
+import useAuth from '../hooks/useAuth'
+import useNotification from '../hooks/useNotification'
 
 const LoginForm = () => {
-  const { login } = useContext(UserSessionContext)
-  const { setNotification } = useContext(NotificationContext)
+  const { login } = useAuth()
+  const { setNotificationTimeout } = useNotification()
   const username = useField()
   const password = useField('password')
 
@@ -22,7 +21,10 @@ const LoginForm = () => {
     try {
       await login(username.value, password.value)
     } catch (error) {
-      setNotification({ text: 'wrong username or password', type: 'danger' })
+      setNotificationTimeout({
+        text: 'wrong username or password',
+        type: 'danger',
+      })
     } finally {
       reset()
     }

@@ -9,8 +9,8 @@ const useUsersQuery = () => {
     queryFn: userService.getAll,
     staleTime: Infinity,
   })
-  const queryClient = useQueryClient()
   const users = data ?? []
+  const queryClient = useQueryClient()
 
   const userById = (id) => {
     return users.find((user) => user.id === id)

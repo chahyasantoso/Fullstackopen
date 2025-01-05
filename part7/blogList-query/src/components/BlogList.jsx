@@ -1,13 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import CreateForm from './CreateForm'
 import Toggleable from './Toggleable'
 import { Link } from 'react-router-dom'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
-import useBlogsQuery from '../hooks/useBlogsQuery'
+import useBlogs from '../hooks/useBlogs'
 
 const BlogList = () => {
-  const { blogs } = useBlogsQuery()
+  const { blogs } = useBlogs()
   const createRef = useRef()
 
   return (

@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import Table from 'react-bootstrap/Table'
-import useUsersQuery from '../hooks/useUsersQuery'
+import useUsers from '../hooks/useUsers'
 
 const UserList = () => {
-  const { users } = useUsersQuery()
+  const { users } = useUsers()
 
   return (
     <div>

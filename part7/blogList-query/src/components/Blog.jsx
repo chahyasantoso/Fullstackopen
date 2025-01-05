@@ -2,27 +2,26 @@ import CommentList from './CommentList'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Button from 'react-bootstrap/Button'
+
 import { useParams } from 'react-router-dom'
-import useBlogMutation from '../hooks/useBlogMutation'
-import { useContext } from 'react'
-import UserSessionContext from '../contexts/UserSessionContext'
-import useBlogsQuery from '../hooks/useBlogsQuery'
+import useAuth from '../hooks/useAuth'
+import useBlogs from '../hooks/useBlogs'
 
 const Blog = () => {
-  const { userSession } = useContext(UserSessionContext)
-
   const params = useParams()
-  const blog = useBlogsQuery().blogById(params.id)
-  const { likeMutation, deleteMutation } = useBlogMutation()
+
+  const { userSession } = useAuth()
+  const { blogById, likeBlog, removeBlog } = useBlogs()
+  const blog = blogById(params.id)
 
   const handleLike = async (blog) => {
-    likeMutation.mutate(blog)
+    likeBlog(blog)
   }
 
   const handleDelete = async (blog) => {
     const confirmOK = confirm(`Remove ${blog.title} ${blog.author}`)
     if (confirmOK) {
-      deleteMutation.mutate(blog)
+      removeBlog(blog)
     }
   }
 

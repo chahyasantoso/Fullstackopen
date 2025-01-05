@@ -2,7 +2,8 @@ import { useField } from '../hooks/useField'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
-import useBlogMutation from '../hooks/useBlogMutation'
+import useNotification from '../hooks/useNotification'
+import useBlogs from '../hooks/useBlogs'
 
 const CreateForm = ({ onCreate }) => {
   const title = useField()
@@ -15,14 +16,20 @@ const CreateForm = ({ onCreate }) => {
     url.onReset()
   }
 
-  const { createMutation } = useBlogMutation()
+  const { createBlog } = useBlogs()
+  const { setNotificationTimeout } = useNotification()
 
   const handleCreate = async (e) => {
     e.preventDefault()
     const blog = { title: title.value, author: author.value, url: url.value }
-    await createMutation.mutateAsync(blog)
+    // try {
+    await createBlog(blog)
     onCreate?.()
     reset()
+    // } catch (error) {
+    //   const text = error.response?.data?.error ?? error.message
+    //   setNotificationTimeout({ text, type: 'danger' })
+    // }
   }
 
   return (

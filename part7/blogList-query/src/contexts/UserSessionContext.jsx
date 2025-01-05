@@ -1,7 +1,5 @@
 import { useReducer } from 'react'
 import { createContext } from 'react'
-import userSessionService from '../services/userSession'
-import loginService from '../services/login'
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -15,34 +13,22 @@ const reducer = (state, action) => {
   }
 }
 
-const setUserSession = (userSession) => ({
+export const setUserSession = (userSession) => ({
   type: 'SET_USER_SESSION',
   payload: userSession,
 })
 
-const clearUserSession = () => ({
+export const clearUserSession = () => ({
   type: 'CLEAR_USER_SESSION',
 })
 
 const UserSessionContext = createContext()
 
 export const UserSessionContextProvider = ({ children }) => {
-  const initialState = userSessionService.getSession()
-  const [userSession, dispatch] = useReducer(reducer, initialState)
-
-  const login = async (username, password) => {
-    const userFromLogin = await loginService.login(username, password)
-    userSessionService.setSession(userFromLogin)
-    dispatch(setUserSession(userFromLogin))
-  }
-
-  const logout = () => {
-    userSessionService.clearSession()
-    dispatch(clearUserSession())
-  }
+  const [userSession, dispatch] = useReducer(reducer, null)
 
   return (
-    <UserSessionContext.Provider value={{ userSession, login, logout }}>
+    <UserSessionContext.Provider value={[userSession, dispatch]}>
       {children}
     </UserSessionContext.Provider>
   )

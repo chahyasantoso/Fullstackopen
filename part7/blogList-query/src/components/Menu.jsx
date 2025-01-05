@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom'
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import Button from 'react-bootstrap/Button'
-import { useContext } from 'react'
-import UserSessionContext from '../contexts/UserSessionContext'
+import useAuth from '../hooks/useAuth'
 
 const Menu = () => {
-  const { userSession, logout } = useContext(UserSessionContext)
+  const { userSession, logout } = useAuth()
 
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">

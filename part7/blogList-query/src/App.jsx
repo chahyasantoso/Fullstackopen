@@ -7,11 +7,27 @@ import Login from './components/Login'
 import Menu from './components/Menu'
 
 import { Routes, Route } from 'react-router-dom'
-import { useContext } from 'react'
-import UserSessionContext from './contexts/UserSessionContext'
+import useAuth from './hooks/useAuth'
+import useInterceptor from './hooks/useInterceptor'
+import useNotification from './hooks/useNotification'
 
 const App = () => {
-  const { userSession } = useContext(UserSessionContext)
+  const { userSession, isInitialized, logout } = useAuth()
+  const { setNotificationTimeout } = useNotification()
+
+  const handleExpireToken = (error) => {
+    const text = error.response?.data?.error ?? error.message
+    if (text.includes('token expired')) {
+      setNotificationTimeout({ text, type: 'danger' })
+      logout()
+    }
+    return Promise.reject(error)
+  }
+  useInterceptor(handleExpireToken)
+
+  if (!isInitialized) {
+    return null
+  }
 
   if (!userSession) {
     return <Login />
