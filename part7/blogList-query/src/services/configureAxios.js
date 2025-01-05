@@ -1,12 +1,10 @@
 import axios from 'axios'
-import { setNotification } from '../reducers/notificationReducer'
-import { logout } from '../reducers/userSessionReducer'
 
 const handleError = (error, store) => {
   const text = error.response?.data?.error ?? error.message
-  store.dispatch(setNotification({ text, type: 'danger' }))
+  //store.dispatch(setNotification({ text, type: 'danger' }))
   if (text.includes('token expired')) {
-    store.dispatch(logout())
+    //store.dispatch(logout())
   }
   return Promise.reject(error)
 }

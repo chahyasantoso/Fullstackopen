@@ -1,24 +1,22 @@
-import { useDispatch, useSelector } from 'react-redux'
 import CommentList from './CommentList'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Button from 'react-bootstrap/Button'
 import { useParams } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
 import useBlogMutation from '../hooks/useBlogMutation'
+import { useContext } from 'react'
+import UserSessionContext from '../contexts/UserSessionContext'
+import useBlogsQuery from '../hooks/useBlogsQuery'
 
 const Blog = () => {
+  const { userSession } = useContext(UserSessionContext)
+
   const params = useParams()
-  const userSession = useSelector((state) => state.userSession)
-
-  const queryClient = useQueryClient()
-  const blogs = queryClient.getQueryData(['blogs'])
-  const blog = blogs ? blogs.find((blog) => blog.id === params.id) : null
-
+  const blog = useBlogsQuery().blogById(params.id)
   const { likeMutation, deleteMutation } = useBlogMutation()
 
   const handleLike = async (blog) => {
-    likeMutation.mutate({ ...blog, likes: blog.likes + 1 })
+    likeMutation.mutate(blog)
   }
 
   const handleDelete = async (blog) => {

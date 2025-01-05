@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import Table from 'react-bootstrap/Table'
+import { useSelector } from 'react-redux'
 
-const UserList = ({ users }) => {
+const UserList = () => {
+  const users = useSelector((state) => state.users)
+
   return (
     <div>
       <Table striped>

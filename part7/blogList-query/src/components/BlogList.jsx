@@ -4,8 +4,10 @@ import Toggleable from './Toggleable'
 import { Link } from 'react-router-dom'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
+import useBlogsQuery from '../hooks/useBlogsQuery'
 
-const BlogList = ({ blogs }) => {
+const BlogList = () => {
+  const { blogs } = useBlogsQuery()
   const createRef = useRef()
 
   return (

@@ -1,17 +1,10 @@
-import { createSelector } from '@reduxjs/toolkit'
 import Card from 'react-bootstrap/Card'
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-
-const userSelector = createSelector(
-  (state) => state.users, // input1 => users
-  (state, id) => id, // input2 => id
-  (users, id) => users.find((user) => user.id === id) //output berdasarkan input1 dan input2
-)
+import useUsersQuery from '../hooks/useUsersQuery'
 
 const User = () => {
   const params = useParams()
-  const user = useSelector((state) => userSelector(state, params.id))
+  const user = useUsersQuery().userById(params.id)
 
   if (!user) {
     return null

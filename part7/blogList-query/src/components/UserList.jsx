@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import Table from 'react-bootstrap/Table'
+import useUsersQuery from '../hooks/useUsersQuery'
 
-const UserList = ({ users }) => {
+const UserList = () => {
+  const { users } = useUsersQuery()
+
   return (
     <div>
       <Table striped>
