@@ -11,15 +11,18 @@ const useNotification = () => {
   const setNotificationTimeout = (notification, ms = 5000) => {
     dispatch(setNotification(notification))
     clearTimeout(timeoutId)
-    const id = setTimeout(() => {
-      dispatch(resetNotification())
-    }, ms)
+    const id = setTimeout(() => clearNotification(), ms)
     dispatch(setTimeoutId(id))
+  }
+
+  const clearNotification = () => {
+    dispatch(resetNotification())
   }
 
   return {
     notification: { text, type },
     setNotificationTimeout,
+    clearNotification,
   }
 }
 

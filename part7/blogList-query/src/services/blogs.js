@@ -3,6 +3,7 @@ const baseUrl = '/api/blogs'
 
 const getAll = async () => {
   const response = await axios.get(baseUrl)
+  console.log('fetching blogs')
   return response.data
 }
 

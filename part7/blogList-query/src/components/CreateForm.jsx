@@ -2,34 +2,43 @@ import { useField } from '../hooks/useField'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
+import Spinner from 'react-bootstrap/Spinner'
 import useNotification from '../hooks/useNotification'
-import useBlogs from '../hooks/useBlogs'
+import useBlogsMutation from '../hooks/useBlogsMutation'
 
 const CreateForm = ({ onCreate }) => {
+  const { createMutation } = useBlogsMutation()
+  const { setNotificationTimeout } = useNotification()
+
   const title = useField()
   const author = useField()
   const url = useField()
 
-  const reset = () => {
+  const handleCreate = async (e) => {
+    e.preventDefault()
+    const blog = { title: title.value, author: author.value, url: url.value }
+    try {
+      const newBlog = await createMutation.mutateAsync(blog)
+      setNotificationTimeout({
+        text: `a new blog ${newBlog.title} by ${newBlog.author}`,
+      })
+      onCreate?.()
+      handleReset()
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
+  const handleReset = () => {
     title.onReset()
     author.onReset()
     url.onReset()
   }
 
-  const { createBlog } = useBlogs()
-  const { setNotificationTimeout } = useNotification()
-
-  const handleCreate = async (e) => {
-    e.preventDefault()
-    const blog = { title: title.value, author: author.value, url: url.value }
-    // try {
-    await createBlog(blog)
-    onCreate?.()
-    reset()
-    // } catch (error) {
-    //   const text = error.response?.data?.error ?? error.message
-    //   setNotificationTimeout({ text, type: 'danger' })
-    // }
+  const handleError = (error) => {
+    console.error(error)
+    const text = error.response?.data?.error ?? error.message
+    setNotificationTimeout({ text, type: 'danger' })
   }
 
   return (
@@ -50,6 +59,14 @@ const CreateForm = ({ onCreate }) => {
             <Form.Control name="url" {...url} />
           </Form.Group>
           <Button className="mt-3 w-100" variant="primary" type="submit">
+            {createMutation.isPending && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                className="mx-2"
+              />
+            )}
             Create
           </Button>
         </Form>

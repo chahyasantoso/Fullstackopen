@@ -4,34 +4,57 @@ import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import InputGroup from 'react-bootstrap/InputGroup'
 import ListGroup from 'react-bootstrap/ListGroup'
+import Spinner from 'react-bootstrap/Spinner'
 
 import useNotification from '../hooks/useNotification'
-import useBlogs from '../hooks/useBlogs'
+import useBlogsMutation from '../hooks/useBlogsMutation'
 
 const CommentList = ({ blog }) => {
   const { setNotificationTimeout } = useNotification()
-  const { addCommentToBlog } = useBlogs()
+  const { addCommentMutation } = useBlogsMutation()
   const commentInput = useField('text')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       const comment = { content: commentInput.value }
-      await addCommentToBlog(blog, comment)
+      await addCommentMutation.mutateAsync({ blog, comment })
+      handleReset()
     } catch (error) {
-      setNotificationTimeout({ text: 'error add comment', type: 'danger' })
-    } finally {
-      commentInput.onReset()
+      handleError(error)
     }
+  }
+
+  const handleReset = () => {
+    commentInput.onReset()
+  }
+
+  const handleError = (error) => {
+    console.error(error)
+    const text = error.response?.data?.error ?? error.message
+    setNotificationTimeout({ text, type: 'danger' })
   }
 
   return (
     <div>
       <h5>comments</h5>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} onReset={() => console.log('reset')}>
         <InputGroup className="mb-3">
           <Form.Control name="comment" {...commentInput} />
-          <Button type="submit">add comment</Button>
+          <Button
+            type="submit"
+            disabled={addCommentMutation.isPending || !commentInput.value}
+          >
+            {addCommentMutation.isPending && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                className="mx-2"
+              />
+            )}
+            add comment
+          </Button>
         </InputGroup>
       </Form>
       <Card>

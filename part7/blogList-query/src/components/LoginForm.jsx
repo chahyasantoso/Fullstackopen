@@ -2,32 +2,37 @@ import { useField } from '../hooks/useField'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
+import Spinner from 'react-bootstrap/Spinner'
 import useAuth from '../hooks/useAuth'
 import useNotification from '../hooks/useNotification'
 
 const LoginForm = () => {
-  const { login } = useAuth()
+  const { login, isLoading } = useAuth()
   const { setNotificationTimeout } = useNotification()
   const username = useField()
   const password = useField('password')
 
-  const reset = () => {
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    const form = e.target
+    try {
+      await login(username.value, password.value)
+    } catch (error) {
+      handleError(error)
+    } finally {
+      handleReset()
+    }
+  }
+
+  const handleReset = () => {
     username.onReset()
     password.onReset()
   }
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    try {
-      await login(username.value, password.value)
-    } catch (error) {
-      setNotificationTimeout({
-        text: 'wrong username or password',
-        type: 'danger',
-      })
-    } finally {
-      reset()
-    }
+  const handleError = (error) => {
+    console.error(error)
+    const text = error.response?.data?.error ?? error.message
+    setNotificationTimeout({ text, type: 'danger' })
   }
 
   return (
@@ -42,7 +47,20 @@ const LoginForm = () => {
             <Form.Label>Password</Form.Label>
             <Form.Control name="password" {...password} />
           </Form.Group>
-          <Button className="mt-3 w-100" variant="primary" type="submit">
+          <Button
+            className="mt-3 w-100"
+            variant="primary"
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                className="mx-2"
+              />
+            )}
             Login
           </Button>
         </Form>

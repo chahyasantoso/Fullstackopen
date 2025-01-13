@@ -4,14 +4,15 @@ import Toggleable from './Toggleable'
 import { Link } from 'react-router-dom'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
-import useBlogs from '../hooks/useBlogs'
+import { useBlogs } from '../hooks/useBlogs'
+import BlogListPlaceHolder from './BlogListPlaceholder'
 
 const BlogList = () => {
-  const { blogs } = useBlogs()
+  const { data: blogs, isSuccess, isError } = useBlogs()
   const createRef = useRef()
 
   return (
-    <div>
+    <BlogListPlaceHolder isSuccess={isSuccess} isError={isError}>
       <Toggleable
         className="mb-3 "
         ref={createRef}
@@ -22,7 +23,7 @@ const BlogList = () => {
       </Toggleable>
       <Card>
         <ListGroup variant="flush">
-          {blogs.map((blog) => (
+          {blogs?.map((blog) => (
             <ListGroup.Item key={blog.id}>
               <Link to={`/blogs/${blog.id}`}>
                 {blog.title} {blog.user.name}
@@ -31,7 +32,7 @@ const BlogList = () => {
           ))}
         </ListGroup>
       </Card>
-    </div>
+    </BlogListPlaceHolder>
   )
 }
 

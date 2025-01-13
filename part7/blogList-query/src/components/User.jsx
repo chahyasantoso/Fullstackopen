@@ -1,10 +1,10 @@
 import Card from 'react-bootstrap/Card'
 import { useParams } from 'react-router-dom'
-import useUsers from '../hooks/useUsers'
+import { useUser } from '../hooks/useUsers'
 
 const User = () => {
-  const params = useParams()
-  const user = useUsers().userById(params.id)
+  const { id: userId } = useParams()
+  const { data: user } = useUser(userId)
 
   if (!user) {
     return null

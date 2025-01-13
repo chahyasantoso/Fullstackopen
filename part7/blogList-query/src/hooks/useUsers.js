@@ -1,11 +1,15 @@
-import useUsersQuery from './useUsersQuery'
+import { useQuery } from '@tanstack/react-query'
+import userService from '../services/users'
 
-const useUsers = () => {
-  const { users, userById } = useUsersQuery()
-  return {
-    users,
-    userById,
-  }
+export const useUsers = (select) => {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
+    select,
+    staleTime: Infinity,
+  })
 }
 
-export default useUsers
+export const useUser = (id) => {
+  return useUsers((users) => users.find((user) => user.id === id))
+}
