@@ -1,28 +1,16 @@
 import Placeholder from 'react-bootstrap/Placeholder'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
-import useNotification from '../hooks/useNotification'
-import { useEffect } from 'react'
 
-const BlogListPlaceHolder = ({ children, isSuccess, error }) => {
-  const { setNotificationTimeout } = useNotification()
-  const placeholders = [5, 2, 4, 1, 3]
-
-  useEffect(() => {
-    if (error) {
-      console.error(error)
-      setNotificationTimeout({ text: error.message, type: 'danger' })
-    }
-  }, [error])
-
+const BlogPlaceholder = ({ children, placeholder, isSuccess, isError }) => {
   if (isSuccess) {
     return children
   }
+  return isError ? null : placeholder
+}
 
-  if (error) {
-    return null
-  }
-
+export const ListPlaceholder = () => {
+  const placeholders = [5, 2, 4, 1, 3]
   return (
     <div>
       <Card>
@@ -40,4 +28,4 @@ const BlogListPlaceHolder = ({ children, isSuccess, error }) => {
   )
 }
 
-export default BlogListPlaceHolder
+export default BlogPlaceholder

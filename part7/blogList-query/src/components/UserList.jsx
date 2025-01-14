@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom'
 import Table from 'react-bootstrap/Table'
 import { useUsers } from '../hooks/useUsers'
-import BlogListPlaceHolder from './BlogListPlaceholder'
+import BlogPlaceholder, { ListPlaceholder } from './BlogPlaceholder'
 
 const UserList = () => {
   const { data: users, isSuccess, isError, error } = useUsers()
 
   return (
-    <BlogListPlaceHolder isSuccess={isSuccess} isError={isError}>
+    <BlogPlaceholder
+      placeholder={<ListPlaceholder />}
+      isSuccess={isSuccess}
+      isError={isError}
+    >
       <Table striped>
         <thead>
           <tr>
@@ -28,7 +32,7 @@ const UserList = () => {
           })}
         </tbody>
       </Table>
-    </BlogListPlaceHolder>
+    </BlogPlaceholder>
   )
 }
 

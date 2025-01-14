@@ -9,14 +9,25 @@ import User from './components/User'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import Menu from './components/Menu'
-import BlogListPlaceHolder from './components/BlogListPlaceholder'
+import BlogPlaceholder, { ListPlaceholder } from './components/BlogPlaceholder'
+import useNotification from './hooks/useNotification'
 
 const App = () => {
   useAxiosInterceptor()
-  const { userSession, isSuccess, error, loadUserSession } = useAuth()
+  const { userSession, isSuccess, isError, loadUserSession } = useAuth()
+  const loadStatus = { isSuccess, isError }
+  const { setNotificationTimeout } = useNotification()
 
   useEffect(() => {
-    loadUserSession()
+    const handleLoad = async () => {
+      try {
+        await loadUserSession()
+      } catch (error) {
+        console.error(error)
+        setNotificationTimeout({ type: 'danger', text: error.message })
+      }
+    }
+    handleLoad()
   }, [])
 
   const isLoggedOut = isSuccess && !userSession
@@ -30,14 +41,14 @@ const App = () => {
       <div className="container">
         <h2 className="mt-3 mb-3">BlogApp</h2>
         <Notification />
-        <BlogListPlaceHolder isSuccess={isSuccess} error={error}>
+        <BlogPlaceholder placeholder={<ListPlaceholder />} {...loadStatus}>
           <Routes>
             <Route path="/" element={<BlogList />} />
             <Route path="/blogs/:id" element={<Blog />} />
             <Route path="/users" element={<UserList />} />
             <Route path="/users/:id" element={<User />} />
           </Routes>
-        </BlogListPlaceHolder>
+        </BlogPlaceholder>
       </div>
     </div>
   )
