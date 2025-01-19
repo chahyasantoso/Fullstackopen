@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import UserSessionContext, {
   setUserSession,
   clearUserSession,
@@ -9,22 +9,20 @@ import loginService from '../services/login'
 const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState(null)
-  const isError = error !== null
+  const [isError, setIsError] = useState(false)
   const [userSession, dispatch] = useContext(UserSessionContext)
 
   const withStatus = (asyncFn) => {
     return async (...args) => {
       setIsLoading(true)
       setIsSuccess(false)
-      setError(null)
+      setIsError(false)
       try {
         await new Promise((r) => setTimeout(r, 2000))
         await asyncFn(...args)
         setIsSuccess(true)
       } catch (error) {
-        setError(error)
-        setIsSuccess(false)
+        setIsError(true)
         throw error
       } finally {
         setIsLoading(false)
@@ -33,10 +31,8 @@ const useAuth = () => {
   }
 
   const loadUserSession = withStatus(async () => {
-    const userSession = userSessionService.getSession()
-    if (userSession) {
-      dispatch(setUserSession(userSession))
-    }
+    const userFromSession = userSessionService.getSession()
+    dispatch(setUserSession(userFromSession))
   })
 
   const login = withStatus(async (username, password) => {
@@ -55,7 +51,6 @@ const useAuth = () => {
     isLoading,
     isSuccess,
     isError,
-    error,
     loadUserSession,
     login,
     logout,

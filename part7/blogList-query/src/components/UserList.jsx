@@ -1,16 +1,20 @@
 import { Link } from 'react-router-dom'
 import Table from 'react-bootstrap/Table'
 import { useUsers } from '../hooks/useUsers'
-import BlogPlaceholder, { ListPlaceholder } from './BlogPlaceholder'
+import Shimmer, { ListShimmer } from './Shimmer'
+import { useError } from '../hooks/useError'
 
 const UserList = () => {
   const { data: users, isSuccess, isError, error } = useUsers()
+  const { handleError } = useError()
 
   return (
-    <BlogPlaceholder
-      placeholder={<ListPlaceholder />}
+    <Shimmer
+      as={<ListShimmer />}
       isSuccess={isSuccess}
       isError={isError}
+      onError={() => handleError(error)}
+      errorElement={<div>Error fetching list</div>}
     >
       <Table striped>
         <thead>
@@ -20,6 +24,11 @@ const UserList = () => {
           </tr>
         </thead>
         <tbody>
+          {users?.length === 0 && (
+            <tr>
+              <td colSpan={2}>No Data</td>
+            </tr>
+          )}
           {users?.map((user) => {
             return (
               <tr key={user.id}>
@@ -32,7 +41,7 @@ const UserList = () => {
           })}
         </tbody>
       </Table>
-    </BlogPlaceholder>
+    </Shimmer>
   )
 }
 

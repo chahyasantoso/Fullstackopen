@@ -1,21 +1,25 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import CreateForm from './CreateForm'
 import Toggleable from './Toggleable'
 import { Link } from 'react-router-dom'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import { useBlogs } from '../hooks/useBlogs'
-import BlogPlaceholder, { ListPlaceholder } from './BlogPlaceholder'
+import Shimmer, { ListShimmer } from './Shimmer'
+import { useError } from '../hooks/useError'
 
 const BlogList = () => {
-  const { data: blogs, isSuccess, isError } = useBlogs()
+  const { data: blogs, isSuccess, isError, error } = useBlogs()
   const createRef = useRef()
+  const { handleError } = useError()
 
   return (
-    <BlogPlaceholder
-      placeholder={<ListPlaceholder />}
+    <Shimmer
+      as={<ListShimmer />}
       isSuccess={isSuccess}
       isError={isError}
+      onError={() => handleError(error)}
+      errorElement={<div>Error fetching blogs</div>}
     >
       <Toggleable
         className="mb-3 "
@@ -27,6 +31,7 @@ const BlogList = () => {
       </Toggleable>
       <Card>
         <ListGroup variant="flush">
+          {blogs?.length === 0 && <div>No Data</div>}
           {blogs?.map((blog) => (
             <ListGroup.Item key={blog.id}>
               <Link to={`/blogs/${blog.id}`}>
@@ -36,7 +41,7 @@ const BlogList = () => {
           ))}
         </ListGroup>
       </Card>
-    </BlogPlaceholder>
+    </Shimmer>
   )
 }
 

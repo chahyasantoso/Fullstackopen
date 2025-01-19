@@ -6,13 +6,19 @@ import NotificationContext, {
 } from '../contexts/NotificationContext'
 
 const useNotification = () => {
-  const [{ text, type, timeoutId }, dispatch] = useContext(NotificationContext)
+  const [notification, dispatch] = useContext(NotificationContext)
 
-  const setNotificationTimeout = (notification, ms = 5000) => {
-    dispatch(setNotification(notification))
-    clearTimeout(timeoutId)
-    const id = setTimeout(() => clearNotification(), ms)
-    dispatch(setTimeoutId(id))
+  const setNotificationTimeout = (text, type = 'success', ms = 5000) => {
+    dispatch(setNotification({ type, text }))
+    if (ms) {
+      clearTimeout(notification.timeoutId)
+      const id = setTimeout(() => clearNotification(), ms)
+      dispatch(setTimeoutId(id))
+    }
+  }
+
+  const setErrorNotificationTimeout = (text, ms = 5000) => {
+    setNotificationTimeout(text, 'danger', ms)
   }
 
   const clearNotification = () => {
@@ -20,8 +26,9 @@ const useNotification = () => {
   }
 
   return {
-    notification: { text, type },
+    notification,
     setNotificationTimeout,
+    setErrorNotificationTimeout,
     clearNotification,
   }
 }

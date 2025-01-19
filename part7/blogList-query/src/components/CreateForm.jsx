@@ -5,6 +5,7 @@ import Card from 'react-bootstrap/Card'
 import Spinner from 'react-bootstrap/Spinner'
 import useNotification from '../hooks/useNotification'
 import useBlogsMutation from '../hooks/useBlogsMutation'
+import { useError } from '../hooks/useError'
 
 const CreateForm = ({ onCreate }) => {
   const { createMutation } = useBlogsMutation()
@@ -14,14 +15,13 @@ const CreateForm = ({ onCreate }) => {
   const author = useField()
   const url = useField()
 
+  const { handleError } = useError()
   const handleCreate = async (e) => {
     e.preventDefault()
     const blog = { title: title.value, author: author.value, url: url.value }
     try {
       const newBlog = await createMutation.mutateAsync(blog)
-      setNotificationTimeout({
-        text: `a new blog ${newBlog.title} by ${newBlog.author}`,
-      })
+      setNotificationTimeout(`a new blog ${newBlog.title} by ${newBlog.author}`)
       onCreate?.()
       handleReset()
     } catch (error) {
@@ -33,12 +33,6 @@ const CreateForm = ({ onCreate }) => {
     title.onReset()
     author.onReset()
     url.onReset()
-  }
-
-  const handleError = (error) => {
-    console.error(error)
-    const text = error.response?.data?.error ?? error.message
-    setNotificationTimeout({ text, type: 'danger' })
   }
 
   return (

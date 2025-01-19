@@ -4,17 +4,16 @@ import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import Spinner from 'react-bootstrap/Spinner'
 import useAuth from '../hooks/useAuth'
-import useNotification from '../hooks/useNotification'
+import { useError } from '../hooks/useError'
 
 const LoginForm = () => {
   const { login, isLoading } = useAuth()
-  const { setNotificationTimeout } = useNotification()
   const username = useField()
   const password = useField('password')
 
+  const { handleError } = useError()
   const handleLogin = async (e) => {
     e.preventDefault()
-    const form = e.target
     try {
       await login(username.value, password.value)
     } catch (error) {
@@ -27,12 +26,6 @@ const LoginForm = () => {
   const handleReset = () => {
     username.onReset()
     password.onReset()
-  }
-
-  const handleError = (error) => {
-    console.error(error)
-    const text = error.response?.data?.error ?? error.message
-    setNotificationTimeout({ text, type: 'danger' })
   }
 
   return (

@@ -1,15 +1,40 @@
 import Placeholder from 'react-bootstrap/Placeholder'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
+import { useEffect } from 'react'
 
-const BlogPlaceholder = ({ children, placeholder, isSuccess, isError }) => {
+const Shimmer = ({
+  as = null,
+  isSuccess,
+  children,
+  isError,
+  errorElement = null,
+  onError,
+}) => {
+  useEffect(() => {
+    if (isError) {
+      onError?.()
+    }
+  }, [isError])
+
   if (isSuccess) {
     return children
   }
-  return isError ? null : placeholder
+
+  if (isError) {
+    return errorElement
+  }
+
+  return (
+    as ?? (
+      <Placeholder as="div" animation="glow">
+        <Placeholder xs="3" />
+      </Placeholder>
+    )
+  )
 }
 
-export const ListPlaceholder = () => {
+export const ListShimmer = () => {
   const placeholders = [5, 2, 4, 1, 3]
   return (
     <div>
@@ -28,4 +53,4 @@ export const ListPlaceholder = () => {
   )
 }
 
-export default BlogPlaceholder
+export default Shimmer

@@ -1,11 +1,12 @@
 const STORAGE_USER_KEY = 'user_session'
 
 const getSession = () => {
-  throw new Error("can't get session")
+  //throw new Error("can't get session")
   return JSON.parse(localStorage.getItem(STORAGE_USER_KEY))
 }
 
 const setSession = (userSession) => {
+  //throw new Error("can't set session")
   localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(userSession))
 }
 

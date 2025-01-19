@@ -5,15 +5,14 @@ import Card from 'react-bootstrap/Card'
 import InputGroup from 'react-bootstrap/InputGroup'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Spinner from 'react-bootstrap/Spinner'
-
-import useNotification from '../hooks/useNotification'
 import useBlogsMutation from '../hooks/useBlogsMutation'
+import { useError } from '../hooks/useError'
 
 const CommentList = ({ blog }) => {
-  const { setNotificationTimeout } = useNotification()
   const { addCommentMutation } = useBlogsMutation()
   const commentInput = useField('text')
 
+  const { handleError } = useError()
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -29,16 +28,10 @@ const CommentList = ({ blog }) => {
     commentInput.onReset()
   }
 
-  const handleError = (error) => {
-    console.error(error)
-    const text = error.response?.data?.error ?? error.message
-    setNotificationTimeout({ text, type: 'danger' })
-  }
-
   return (
     <div>
       <h5>comments</h5>
-      <Form onSubmit={handleSubmit} onReset={() => console.log('reset')}>
+      <Form onSubmit={handleSubmit}>
         <InputGroup className="mb-3">
           <Form.Control name="comment" {...commentInput} />
           <Button
@@ -59,7 +52,7 @@ const CommentList = ({ blog }) => {
       </Form>
       <Card>
         <ListGroup variant="flush">
-          {blog.comments.map((comment) => (
+          {blog?.comments.map((comment) => (
             <ListGroup.Item key={comment.id}>{comment.content}</ListGroup.Item>
           ))}
         </ListGroup>
