@@ -1,36 +1,26 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
 import CommentList from './CommentList'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Button from 'react-bootstrap/Button'
 import { useParams } from 'react-router-dom'
-import { createSelector } from '@reduxjs/toolkit'
-
-const blogSelector = createSelector(
-  (state) => state.blogs,
-  (state, id) => id,
-  (blogs, id) => blogs.find((blog) => blog.id === id)
-)
+import { useBlog, useBlogDispatch } from '../hooks/useBlogs'
+import { useAuth } from '../hooks/useAuth'
 
 const Blog = () => {
+  const userSession = useAuth()
   const params = useParams()
-  const blog = useSelector((state) => blogSelector(state, params.id))
-  const userSession = useSelector((state) => state.userSession)
-  const dispatch = useDispatch()
+  const blog = useBlog(params.id)
+  const { like, remove } = useBlogDispatch()
 
   const handleLike = async (blog) => {
-    try {
-      await dispatch(likeBlog(blog))
-    } catch {}
+    await like(blog)
   }
 
   const handleDelete = async (blog) => {
     const confirmOK = confirm(`Remove ${blog.title} ${blog.author}`)
     if (confirmOK) {
-      try {
-        await dispatch(deleteBlog(blog))
-      } catch {}
+      await remove(blog)
     }
   }
 

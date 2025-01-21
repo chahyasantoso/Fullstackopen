@@ -1,15 +1,13 @@
-import { useDispatch } from 'react-redux'
-import { setNotification } from '../reducers/notificationReducer'
-import { login } from '../reducers/userSessionReducer'
 import { useField } from '../hooks/useField'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
+import { useAuthDispatch } from '../hooks/useAuth'
 
 const LoginForm = () => {
-  const dispatch = useDispatch()
   const username = useField()
   const password = useField('password')
+  const { login } = useAuthDispatch()
 
   const reset = () => {
     username.onReset()
@@ -18,15 +16,8 @@ const LoginForm = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    try {
-      await dispatch(login(username.value, password.value))
-    } catch (error) {
-      dispatch(
-        setNotification({ text: 'wrong username or password', type: 'danger' })
-      )
-    } finally {
-      reset()
-    }
+    await login(username.value, password.value)
+    reset()
   }
 
   return (

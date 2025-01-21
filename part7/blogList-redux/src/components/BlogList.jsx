@@ -4,16 +4,10 @@ import Toggleable from './Toggleable'
 import { Link } from 'react-router-dom'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
-import { useSelector } from 'react-redux'
-import { createSelector } from '@reduxjs/toolkit'
-
-const blogsSelector = createSelector(
-  (state) => state.blogs, //input; akan memonitor state ini, jika berubah
-  (blogs) => [...blogs].sort((a, b) => b.likes - a.likes) //output; maka output akan dijalankan
-)
+import { useBlogs } from '../hooks/useBlogs'
 
 const BlogList = () => {
-  const blogs = useSelector(blogsSelector)
+  const blogs = useBlogs()
   const createRef = useRef()
 
   return (

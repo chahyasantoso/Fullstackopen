@@ -3,18 +3,21 @@ import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import Button from 'react-bootstrap/Button'
 import Spinner from 'react-bootstrap/Spinner'
-import useAuth from '../hooks/useAuth'
-import useNotification from '../hooks/useNotification'
+import { useAuth, useAuthDispatch } from '../hooks/useAuth'
 import { useError } from '../hooks/useError'
 
 const Menu = () => {
-  const { userSession, isLoading, logout } = useAuth()
+  const userSession = useAuth()
+  const { isPending, logout } = useAuthDispatch()
   const { handleError } = useError()
   const handleLogout = async () => {
     try {
-      await logout()
+      logout()
     } catch (error) {
-      handleError(error, "can't logout, clear your browser storage to logout")
+      handleError(
+        error,
+        "can't permanently logout, clear your browser storage to logout"
+      )
     }
   }
 
@@ -28,7 +31,7 @@ const Menu = () => {
               href="#"
               as={Link}
               to="/"
-              disabled={isLoading || !userSession}
+              disabled={isPending || !userSession}
             >
               Blogs
             </Nav.Link>
@@ -38,7 +41,7 @@ const Menu = () => {
               href="#"
               as={Link}
               to="/users"
-              disabled={isLoading || !userSession}
+              disabled={isPending || !userSession}
             >
               Users
             </Nav.Link>
@@ -50,10 +53,10 @@ const Menu = () => {
                 <Button
                   size="sm"
                   type="button"
-                  disabled={isLoading}
+                  disabled={isPending}
                   onClick={handleLogout}
                 >
-                  {isLoading && (
+                  {isPending && (
                     <Spinner
                       as="span"
                       animation="border"

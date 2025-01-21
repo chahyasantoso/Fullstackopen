@@ -3,11 +3,11 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import Spinner from 'react-bootstrap/Spinner'
-import useAuth from '../hooks/useAuth'
+import { useAuthDispatch } from '../hooks/useAuth'
 import { useError } from '../hooks/useError'
 
 const LoginForm = () => {
-  const { login, isLoading } = useAuth()
+  const { login, isPending } = useAuthDispatch()
   const username = useField()
   const password = useField('password')
 
@@ -17,7 +17,7 @@ const LoginForm = () => {
     try {
       await login(username.value, password.value)
     } catch (error) {
-      handleError(error)
+      handleError(error, "can't save login")
     } finally {
       handleReset()
     }
@@ -44,9 +44,9 @@ const LoginForm = () => {
             className="mt-3 w-100"
             variant="primary"
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
           >
-            {isLoading && (
+            {isPending && (
               <Spinner
                 as="span"
                 animation="border"

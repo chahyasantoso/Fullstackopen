@@ -1,27 +1,20 @@
-import { useDispatch } from 'react-redux'
 import { useField } from '../hooks/useField'
-import { addComment } from '../reducers/blogsReducer'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import InputGroup from 'react-bootstrap/InputGroup'
 import ListGroup from 'react-bootstrap/ListGroup'
-import { setNotification } from '../reducers/notificationReducer'
+import { useBlogDispatch } from '../hooks/useBlogs'
 
 const CommentList = ({ blog }) => {
   const commentInput = useField('text')
-  const dispatch = useDispatch()
+  const { addComment } = useBlogDispatch()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      const comment = { content: commentInput.value }
-      await dispatch(addComment(blog, comment))
-    } catch (error) {
-      dispatch(setNotification({ text: 'error add comment', type: 'danger' }))
-    } finally {
-      commentInput.onReset()
-    }
+    const comment = { content: commentInput.value }
+    await addComment(blog, comment)
+    commentInput.onReset()
   }
 
   return (

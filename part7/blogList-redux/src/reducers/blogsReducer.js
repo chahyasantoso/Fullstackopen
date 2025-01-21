@@ -1,6 +1,5 @@
-import { createSlice, current } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import blogService from '../services/blogs'
-import { setNotification } from './notificationReducer'
 
 const slice = createSlice({
   name: 'blogs',
@@ -42,11 +41,6 @@ export const createBlog = (blog) => {
     const token = getState().userSession.token
     const newBlog = await blogService.createBlog(blog, token)
     dispatch(addToState(newBlog))
-    dispatch(
-      setNotification({
-        text: `a new blog ${newBlog.title} by ${newBlog.author}`,
-      })
-    )
   }
 }
 
@@ -70,15 +64,13 @@ export const deleteBlog = (blog) => {
     const token = getState().userSession.token
     const deletedBlog = await blogService.deleteBlog(blog.id, token)
     dispatch(deleteFromState(deletedBlog))
-    dispatch(setNotification({ text: `blog deleted` }))
   }
 }
 
-export const addComment = (blog, comment) => {
+export const addCommentToBlog = (blog, comment) => {
   return async (dispatch, getState) => {
     const newComment = await blogService.addComment(blog.id, comment)
     const updatedBlog = { ...blog, comments: [...blog.comments, newComment] }
-    console.log('add comment', updatedBlog)
     dispatch(updateToState(updatedBlog))
   }
 }

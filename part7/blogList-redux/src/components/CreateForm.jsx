@@ -4,13 +4,13 @@ import { useField } from '../hooks/useField'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
+import { useBlogDispatch } from '../hooks/useBlogs'
 
 const CreateForm = ({ onCreate }) => {
   const title = useField()
   const author = useField()
   const url = useField()
-
-  const dispatch = useDispatch()
+  const { create } = useBlogDispatch()
 
   const reset = () => {
     title.onReset()
@@ -21,11 +21,9 @@ const CreateForm = ({ onCreate }) => {
   const handleCreate = async (e) => {
     e.preventDefault()
     const blog = { title: title.value, author: author.value, url: url.value }
-    try {
-      await dispatch(createBlog(blog))
-      onCreate?.()
-      reset()
-    } catch {}
+    await create(blog)
+    onCreate?.()
+    reset()
   }
 
   return (

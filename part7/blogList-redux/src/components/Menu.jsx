@@ -1,13 +1,12 @@
-import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { logout } from '../reducers/userSessionReducer'
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import Button from 'react-bootstrap/Button'
+import { useAuth, useAuthDispatch } from '../hooks/useAuth'
 
 const Menu = () => {
-  const userSession = useSelector((state) => state.userSession)
-  const dispatch = useDispatch()
+  const userSession = useAuth()
+  const { logout } = useAuthDispatch()
 
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -28,11 +27,7 @@ const Menu = () => {
             {userSession ? (
               <Nav.Link href="#" as="span">
                 <em className="p-3">{userSession.name} logged in</em>
-                <Button
-                  size="sm"
-                  type="button"
-                  onClick={() => dispatch(logout())}
-                >
+                <Button size="sm" type="button" onClick={() => logout()}>
                   Logout
                 </Button>
               </Nav.Link>

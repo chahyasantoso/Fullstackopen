@@ -1,6 +1,5 @@
-import { useEffect } from 'react'
+import { isValidElement, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import useAuth from './hooks/useAuth'
 import useAxiosInterceptor from './hooks/useAxiosInterceptor'
 import Notification from './components/Notification'
 import BlogList from './components/BlogList'
@@ -10,27 +9,20 @@ import Blog from './components/Blog'
 import Login from './components/Login'
 import Menu from './components/Menu'
 import Shimmer, { ListShimmer } from './components/Shimmer'
-import { useError } from './hooks/useError'
+import { useAuth, useAuthDispatch } from './hooks/useAuth'
 
 const App = () => {
   useAxiosInterceptor()
-  const { userSession, isSuccess, isError, loadUserSession } = useAuth()
-  const { handleError } = useError()
+  const userSession = useAuth()
+  const { isSuccess, loadUserSession } = useAuthDispatch()
 
   useEffect(() => {
-    const handleLoad = async () => {
-      try {
-        await loadUserSession()
-      } catch (error) {
-        handleError(error, "can't load session, please re-login")
-      }
-    }
-    handleLoad()
+    loadUserSession()
   }, [])
 
-  const isLoaded = isSuccess || isError
-  const isLoggedIn = isLoaded && !!userSession
-  const isLoggedOut = isLoaded && !userSession
+  const isLoggedIn = isSuccess && !!userSession
+  const isLoggedOut = isSuccess && !userSession
+
   if (isLoggedOut) {
     return <Login />
   }

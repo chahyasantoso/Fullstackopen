@@ -3,18 +3,18 @@ import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Button from 'react-bootstrap/Button'
 import Spinner from 'react-bootstrap/Spinner'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import useAuth from '../hooks/useAuth'
+import { useNavigate, useParams } from 'react-router-dom'
 import useNotification from '../hooks/useNotification'
 import useBlogsMutation from '../hooks/useBlogsMutation'
 import { useBlog } from '../hooks/useBlogs'
 import { useError } from '../hooks/useError'
 import Shimmer from './Shimmer'
+import { useAuth } from '../hooks/useAuth'
 
 const Blog = () => {
-  const { userSession } = useAuth()
-  const { id: blogId } = useParams()
-  const { data: blog, isSuccess, isError, error } = useBlog(blogId)
+  const userSession = useAuth()
+  const params = useParams()
+  const { data: blog, isSuccess, isError, error } = useBlog(params.id)
   const { likeMutation, deleteMutation } = useBlogsMutation()
   const { setNotificationTimeout } = useNotification()
   const { handleError } = useError()

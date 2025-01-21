@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import sessionService from '../services/userSession'
 import loginService from '../services/login'
 
-const initialState = sessionService.getSession()
+const initialState = null
 
 const slice = createSlice({
   name: 'userSession',
@@ -10,23 +10,42 @@ const slice = createSlice({
   reducers: {
     setUserState(state, action) {
       const userSession = action.payload
-      sessionService.setSession(userSession)
       return userSession
     },
-    logout(state, action) {
-      sessionService.clearSession()
+    clearUserState(state, action) {
       return null
     },
   },
 })
 
-export const { setUserState, logout } = slice.actions
+export const { setUserState, clearUserState } = slice.actions
 
-export const login = (username, password) => {
+export const initializeUserSession = () => {
+  return (dispatch) => {
+    try {
+      const userFromSession = sessionService.getSession()
+      if (userFromSession) {
+        dispatch(setUserState(userFromSession))
+      }
+    } catch (error) {
+      dispatch(clearUserState())
+    }
+  }
+}
+
+export const loginUser = (username, password) => {
   return async (dispatch) => {
     const userFromLogin = await loginService.login(username, password)
     dispatch(setUserState(userFromLogin))
+    sessionService.setSession(userFromLogin)
     return userFromLogin
+  }
+}
+
+export const logoutUser = () => {
+  return (dispatch) => {
+    dispatch(clearUserState())
+    sessionService.clearSession()
   }
 }
 

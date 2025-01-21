@@ -1,11 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
 import blogService from '../services/blogs'
-import useAuth from './useAuth'
 import useBlogsQueryClient from './useBlogsQueryClient'
 import useUsersQueryClient from './useUsersQueryClient'
+import { useAuth } from './useAuth'
 
 const useBlogsMutation = () => {
-  const token = useAuth().userSession?.token
+  const userSession = useAuth()
+  const token = userSession.token
+
   const { appendBlog, updateBlog, deleteBlog } = useBlogsQueryClient()
   const { appendUserBlog, updateUserBlog, deleteUserBlog } =
     useUsersQueryClient()

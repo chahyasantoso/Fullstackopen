@@ -6,49 +6,56 @@ import UserSessionContext, {
 import userSessionService from '../services/userSession'
 import loginService from '../services/login'
 
-const useAuth = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [userSession, dispatch] = useContext(UserSessionContext)
+export const useAuth = () => {
+  return useContext(UserSessionContext)[0]
+}
+
+export const useAuthDispatch = () => {
+  const dispatch = useContext(UserSessionContext)[1]
+  const [status, setStatus] = useState('idle')
+  const isPending = status === 'pending'
+  const isSuccess = status === 'success'
+  const isError = status === 'error'
 
   const withStatus = (asyncFn) => {
     return async (...args) => {
-      setIsLoading(true)
-      setIsSuccess(false)
-      setIsError(false)
+      setStatus('pending')
       try {
-        await new Promise((r) => setTimeout(r, 2000))
+        //await new Promise((r) => setTimeout(r, 2000))
         await asyncFn(...args)
-        setIsSuccess(true)
+        setStatus('success')
       } catch (error) {
-        setIsError(true)
+        setStatus('error')
         throw error
-      } finally {
-        setIsLoading(false)
       }
     }
   }
 
   const loadUserSession = withStatus(async () => {
-    const userFromSession = userSessionService.getSession()
-    dispatch(setUserSession(userFromSession))
+    try {
+      const userFromSession = userSessionService.getSession()
+      if (userFromSession) {
+        dispatch(setUserSession(userFromSession))
+      }
+    } catch (error) {
+      dispatch(clearUserSession())
+    }
   })
 
   const login = withStatus(async (username, password) => {
     const userFromLogin = await loginService.login(username, password)
-    userSessionService.setSession(userFromLogin)
     dispatch(setUserSession(userFromLogin))
+    userSessionService.setSession(userFromLogin)
   })
 
   const logout = withStatus(async () => {
-    userSessionService.clearSession()
     dispatch(clearUserSession())
+    userSessionService.clearSession()
   })
 
   return {
-    userSession,
-    isLoading,
+    status,
+    isPending,
     isSuccess,
     isError,
     loadUserSession,
@@ -56,5 +63,3 @@ const useAuth = () => {
     logout,
   }
 }
-
-export default useAuth

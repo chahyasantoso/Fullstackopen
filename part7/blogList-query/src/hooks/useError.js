@@ -1,12 +1,12 @@
-import useAuth from './useAuth'
+import { useAuthDispatch } from './useAuth'
 import useNotification from './useNotification'
 
 export const useError = () => {
-  const { logout } = useAuth()
+  const { logout } = useAuthDispatch()
   const { setErrorNotificationTimeout } = useNotification()
 
-  const handleError = (error, defaultErrorText = 'Error happen') => {
-    const errorText = error?.response?.data?.error ?? defaultErrorText
+  const handleError = (error, defaultText = 'Error happen') => {
+    const errorText = error?.response?.data?.error ?? defaultText
     setErrorNotificationTimeout(errorText)
     if (error) {
       console.error(error)
@@ -23,7 +23,7 @@ export const useError = () => {
         } catch (error) {
           handleError(
             error,
-            "can't logout, clear your browser storage to logout"
+            "can't permanently logout, clear your browser storage to logout"
           )
         }
       }

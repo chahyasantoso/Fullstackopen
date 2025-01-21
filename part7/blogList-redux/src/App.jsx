@@ -6,20 +6,21 @@ import Blog from './components/Blog'
 import Login from './components/Login'
 import Menu from './components/Menu'
 
-import { useDispatch, useSelector } from 'react-redux'
 import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
-import { initializeUsers } from './reducers/usersReducer'
-import { initializeBlogs } from './reducers/blogsReducer'
+import { useBlogDispatch } from './hooks/useBlogs'
+import { useUserDispatch } from './hooks/useUsers'
+import { useAuth } from './hooks/useAuth'
 
 const App = () => {
-  const userSession = useSelector((state) => state.userSession)
-  const dispatch = useDispatch()
+  const userSession = useAuth()
+  const { initialize: initBlogs } = useBlogDispatch()
+  const { initialize: initUsers } = useUserDispatch()
 
   useEffect(() => {
     if (userSession) {
-      dispatch(initializeBlogs())
-      dispatch(initializeUsers())
+      initBlogs()
+      initUsers()
     }
   }, [userSession])
 
