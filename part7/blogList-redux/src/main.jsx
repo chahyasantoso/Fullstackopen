@@ -10,7 +10,6 @@ import userSessionReducer, {
 } from './reducers/userSessionReducer'
 import usersReducer from './reducers/usersReducer'
 import { BrowserRouter as Router } from 'react-router-dom'
-import configureAxios from './services/configureAxios'
 
 const store = configureStore({
   reducer: {
@@ -22,7 +21,6 @@ const store = configureStore({
 })
 
 store.dispatch(initializeUserSession())
-configureAxios(store)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>

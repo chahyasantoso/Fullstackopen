@@ -23,9 +23,11 @@ export const { setNotificationState, resetNotificationState } = slice.actions
 export const setNotification = (notification, ms = 5000) => {
   return (dispatch) => {
     dispatch(setNotificationState(notification))
-    setTimeout(() => {
-      dispatch(resetNotificationState())
-    }, ms)
+    if (ms > 0) {
+      setTimeout(() => {
+        dispatch(resetNotificationState())
+      }, ms)
+    }
   }
 }
 

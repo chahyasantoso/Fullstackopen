@@ -22,9 +22,7 @@ export const useUserDispatch = () => {
   const dispatch = useDispatch()
 
   const initialize = async () => {
-    try {
-      await dispatch(initializeUsers())
-    } catch {}
+    await dispatch(initializeUsers())
   }
 
   return {

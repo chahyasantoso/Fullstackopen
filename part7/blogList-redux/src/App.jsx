@@ -11,8 +11,10 @@ import { useEffect } from 'react'
 import { useBlogDispatch } from './hooks/useBlogs'
 import { useUserDispatch } from './hooks/useUsers'
 import { useAuth } from './hooks/useAuth'
+import useAxiosInterceptor from './hooks/useAxiosInterceptor'
 
 const App = () => {
+  useAxiosInterceptor()
   const userSession = useAuth()
   const { initialize: initBlogs } = useBlogDispatch()
   const { initialize: initUsers } = useUserDispatch()

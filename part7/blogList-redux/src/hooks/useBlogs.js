@@ -7,7 +7,6 @@ import {
   initializeBlogs,
   likeBlog,
 } from '../reducers/blogsReducer'
-import { setNotification } from '../reducers/notificationReducer'
 
 const blogsSelector = createSelector(
   (state) => state.blogs, //input; akan memonitor state ini, jika berubah
@@ -34,39 +33,23 @@ export const useBlogDispatch = () => {
   const dispatch = useDispatch()
 
   const initialize = async () => {
-    try {
-      await dispatch(initializeBlogs())
-    } catch {}
+    await dispatch(initializeBlogs())
   }
 
   const create = async (blog) => {
-    try {
-      await dispatch(createBlog(blog))
-      dispatch(
-        setNotification({
-          text: `a new blog ${blog.title} by ${blog.author}`,
-        })
-      )
-    } catch {}
+    await dispatch(createBlog(blog))
   }
 
   const like = async (blog) => {
-    try {
-      await dispatch(likeBlog(blog))
-    } catch {}
+    await dispatch(likeBlog(blog))
   }
 
   const remove = async (blog) => {
-    try {
-      await dispatch(deleteBlog(blog))
-      dispatch(setNotification({ text: `blog deleted` }))
-    } catch {}
+    await dispatch(deleteBlog(blog))
   }
 
   const addComment = async (blog, comment) => {
-    try {
-      await dispatch(addCommentToBlog(blog, comment))
-    } catch {}
+    await dispatch(addCommentToBlog(blog, comment))
   }
 
   return {

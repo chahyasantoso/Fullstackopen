@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux'
 import Alert from 'react-bootstrap/Alert'
+import useNotification from '../hooks/useNotification'
 
 const Notification = () => {
-  const { text, type } = useSelector((state) => state.notification)
+  const { text, type } = useNotification()
   if (!text) {
     return null
   }

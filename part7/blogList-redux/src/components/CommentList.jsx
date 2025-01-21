@@ -5,16 +5,22 @@ import Card from 'react-bootstrap/Card'
 import InputGroup from 'react-bootstrap/InputGroup'
 import ListGroup from 'react-bootstrap/ListGroup'
 import { useBlogDispatch } from '../hooks/useBlogs'
+import { useError } from '../hooks/useError'
 
 const CommentList = ({ blog }) => {
   const commentInput = useField('text')
   const { addComment } = useBlogDispatch()
+  const { handleError } = useError()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     const comment = { content: commentInput.value }
-    await addComment(blog, comment)
-    commentInput.onReset()
+    try {
+      await addComment(blog, comment)
+      commentInput.onReset()
+    } catch (error) {
+      handleError(error)
+    }
   }
 
   return (

@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from 'react-redux'
 import CommentList from './CommentList'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
@@ -6,21 +5,34 @@ import Button from 'react-bootstrap/Button'
 import { useParams } from 'react-router-dom'
 import { useBlog, useBlogDispatch } from '../hooks/useBlogs'
 import { useAuth } from '../hooks/useAuth'
+import { useNotificationDispatch } from '../hooks/useNotification'
+import { useError } from '../hooks/useError'
 
 const Blog = () => {
   const userSession = useAuth()
   const params = useParams()
   const blog = useBlog(params.id)
   const { like, remove } = useBlogDispatch()
+  const { setNotificationTimeout } = useNotificationDispatch()
+  const { handleError } = useError()
 
   const handleLike = async (blog) => {
-    await like(blog)
+    try {
+      await like(blog)
+    } catch (error) {
+      handleError(error)
+    }
   }
 
   const handleDelete = async (blog) => {
     const confirmOK = confirm(`Remove ${blog.title} ${blog.author}`)
     if (confirmOK) {
-      await remove(blog)
+      try {
+        await remove(blog)
+        setNotificationTimeout('Blog deleted')
+      } catch (error) {
+        handleError(error)
+      }
     }
   }
 

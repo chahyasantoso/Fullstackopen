@@ -18,7 +18,7 @@ const BlogList = () => {
         showLabel="New Blog"
         hideLabel="Cancel"
       >
-        <CreateForm onCreate={() => createRef.current.toggle()} />
+        <CreateForm onCreate={() => createRef?.current.toggle()} />
       </Toggleable>
       <Card>
         <ListGroup variant="flush">

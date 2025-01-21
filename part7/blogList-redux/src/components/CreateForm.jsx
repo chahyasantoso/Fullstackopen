@@ -1,16 +1,18 @@
-import { useDispatch } from 'react-redux'
-import { createBlog } from '../reducers/blogsReducer'
 import { useField } from '../hooks/useField'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import { useBlogDispatch } from '../hooks/useBlogs'
+import { useNotificationDispatch } from '../hooks/useNotification'
+import { useError } from '../hooks/useError'
 
 const CreateForm = ({ onCreate }) => {
   const title = useField()
   const author = useField()
   const url = useField()
   const { create } = useBlogDispatch()
+  const { handleError } = useError()
+  const { setNotificationTimeout } = useNotificationDispatch()
 
   const reset = () => {
     title.onReset()
@@ -21,9 +23,14 @@ const CreateForm = ({ onCreate }) => {
   const handleCreate = async (e) => {
     e.preventDefault()
     const blog = { title: title.value, author: author.value, url: url.value }
-    await create(blog)
-    onCreate?.()
-    reset()
+    try {
+      await create(blog)
+      setNotificationTimeout(`a new blog ${blog.title} by ${blog.author}`)
+      onCreate?.()
+      reset()
+    } catch (error) {
+      handleError(error)
+    }
   }
 
   return (

@@ -3,11 +3,13 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import { useAuthDispatch } from '../hooks/useAuth'
+import { useError } from '../hooks/useError'
 
 const LoginForm = () => {
   const username = useField()
   const password = useField('password')
   const { login } = useAuthDispatch()
+  const { handleError } = useError()
 
   const reset = () => {
     username.onReset()
@@ -16,8 +18,12 @@ const LoginForm = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    await login(username.value, password.value)
-    reset()
+    try {
+      await login(username.value, password.value)
+      reset()
+    } catch (error) {
+      handleError(error)
+    }
   }
 
   return (
